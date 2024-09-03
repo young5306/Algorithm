@@ -2,11 +2,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class Main {
+public class NM2 {
 
 	public static void main(String[] args) throws Exception {
-		// 1~N 중 중복없이 M개 고르기 (순서O) -> 중복X 조합
-		// 중복 X - visited 배열 필요
+		// 1~N 중 중복없이 M개 고르기 (순서O) -> 중복X 조합 (조합은 visited 필요X)
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
@@ -14,11 +13,10 @@ public class Main {
 		int M = Integer.parseInt(st.nextToken());
 		
 		int[] sel = new int[M];
-		boolean[] visited = new boolean[N+1]; // 1~N
-		combination(N, M, sel, visited, 1, 0);
+		combination(N, M, sel, 1, 0);
 	}
 	
-	public static void combination(int N, int M, int[] sel, boolean[] visited, int idx, int sidx) {
+	public static void combination(int N, int M, int[] sel, int idx, int sidx) {
 		// 기저 조건
 		if(sidx == M) {
 			StringBuilder sb = new StringBuilder();
@@ -31,17 +29,9 @@ public class Main {
 		
 		// 재귀 부분
 		for (int i = idx; i <= N; i++) {
-//			System.out.println(i);
 			// 선택 O
-			if(!visited[i]) {
-				sel[sidx] = i;
-				visited[i] = true;
-//				System.out.println("재귀");
-				combination(N, M, sel, visited, i+1, sidx+1); // idx+1로 했다가 틀림
-				visited[i] = false; // 원상복구
-			}
+			sel[sidx] = i;
+			combination(N, M, sel, i+1, sidx+1); // idx+1로 했다가 틀림
 		}
 	}
-	
-
 }
