@@ -23,10 +23,11 @@ public class Main {
 	public static void combination(int N, int M, int[] sel, boolean[] visited, int sidx) {
 		// 기저 조건
 		if(sidx==M) {
+			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < M; i++) {
-				System.out.print(sel[i]+" ");
+				sb.append(sel[i]).append(" ");
 			}
-			System.out.println();
+			System.out.println(sb);
 			return;
 		}
 		
