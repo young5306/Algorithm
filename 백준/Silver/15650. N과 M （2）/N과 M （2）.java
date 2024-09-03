@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 public class NM2 {
 
 	public static void main(String[] args) throws Exception {
-		// 1~N 중 중복없이 M개 고르기 (순서O) -> 중복X 조합 (조합은 visited 필요X)
+		// 1~N 중 중복없이 M개 고르기 (순서X) -> 중복X 조합 (조합은 visited 필요X)
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
