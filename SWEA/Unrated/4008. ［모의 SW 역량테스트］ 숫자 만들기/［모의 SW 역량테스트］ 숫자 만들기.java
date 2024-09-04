@@ -1,4 +1,5 @@
 
+
 import java.util.Scanner;
 
 public class Solution {
@@ -55,18 +56,21 @@ public class Solution {
 		for (int op = 0; op < 4; op++) {
 			if(cnt[op]>0) {
 				cnt[op]--;
-				if(op==0) {
-					perm(sidx+1, res + nums[sidx+1]);
-				} else if (op==1) {
-					perm(sidx+1, res - nums[sidx+1]);
-				} else if (op==2) {
-					perm(sidx+1, res * nums[sidx+1]);
-				} else if (op==3) {
-					perm(sidx+1, res / nums[sidx+1]);
-				} 
+				perm(sidx+1, calc(res, nums[sidx+1], op));
 				cnt[op]++;
 			}
 		}
 	}
-
+	
+	static int calc(int num1, int num2, int op) {
+		if(op==0) {
+			return num1 + num2;
+		} else if(op==1) {
+			return num1 - num2;
+		} else if(op==2) {
+			return num1 * num2;
+		} 
+		return num1 / num2;
+		 
+	}
 }
