@@ -1,8 +1,7 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Set;
+import java.util.Arrays;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 public class Main {
 	
@@ -18,18 +17,13 @@ public class Main {
 		int N = Integer.parseInt(st.nextToken());
 		int M = Integer.parseInt(st.nextToken());
 		
-		Set<Integer> set = new TreeSet<>();
+		int[] nums = new int[N];
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++) {
-			set.add(Integer.parseInt(st.nextToken()));
+			nums[i] = Integer.parseInt(st.nextToken());
 		}
 		
-		N = set.size();
-		int[] nums = new int[N];
-		int idx = 0;
-		for(int i : set) {
-			nums[idx++] = i;
-		}
+		Arrays.sort(nums);
 		int[] sel = new int[M];
 		combination(N, M, nums, sel, 0, 0);
 		
@@ -48,9 +42,13 @@ public class Main {
 		}
 		
 		// 재귀 부분
+		int before = 0;
 		for (int i = idx; i < N; i++) {
-			sel[sidx] = nums[i];
-			combination(N, M, nums, sel, i, sidx+1);
+			if(before != nums[i]) {
+				before = nums[i];
+				sel[sidx] = nums[i];
+				combination(N, M, nums, sel, i, sidx+1);
+			}
 		}
 	}
 
