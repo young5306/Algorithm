@@ -1,24 +1,16 @@
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class Solution {
-	
+public class Solution { // bfs
 	static int[][] maze;
-	static boolean[][] visited;
 	static int[] dr = {-1, 0, 1, 0}; // 상우하좌
 	static int[] dc = {0, 1, 0, -1};
 	static int flag;
 
 	public static void main(String[] args) throws Exception {
-		
-		// 벽1 길0 출발점2 도착점3
-		// 입력받으면서 출발점 저장
-		// 
-		// 출발점부터 dfs -> 인접점(nr,nc)을 dfs 
-		// 인접점 조건 : 범위 내에서, 0이면서 방문안한곳 (visited[][] 필요), 3이면 바로 끝내 
-		// => 범위 내 조건 필요한가...
-		// 가다가 3마주치면 flag == 1, break 
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -41,35 +33,42 @@ public class Solution {
 				}
 			} // 입력 완료
 			
-			// dfs
-			visited = new boolean[16][16];
+			
+			// bfs
+			// queue에 시작점 넣기
+			// 시작점 poll하고 시작점과 연결된 인접점 넣기
+			// 인접점(nr,nc) 조건 : 0이나 3 (3이면 바로 break)
+			// visited : 2차배열 대신 지나온 거리 벽1로 바꾸자
 			flag = 0;
-			dfs(startR, startC);
+			bfs(startR, startC);
 			
 			System.out.println("#"+T+" "+flag);
+			
 		} // tc
 
 	} // main
 	
-	static void dfs(int r, int c) {
-		if(flag==1) return; // 3 찾으면 더 진행 안함
+	static void bfs(int r, int c) {
+		Queue<int[]> q = new LinkedList<>();
+		maze[r][c] = 1;
+		q.add(new int[] {r,c});
 		
-		visited[r][c] = true;
-		
-		for (int d = 0; d < 4; d++) {
-			int nr = r + dr[d];
-			int nc = c + dc[d];
+		while(!q.isEmpty()) {
+			int[] place = q.poll();
 			
-			// 범위 내 조건 일단 빼보자..
-			if(maze[nr][nc]==0 && !visited[nr][nc]) {
-				visited[nr][nc] = true;
-				dfs(nr, nc);
-			} else if(maze[nr][nc]==3) {
-				flag = 1;
-				return;
+			for (int d = 0; d < 4; d++) {
+				int nr = place[0] + dr[d];
+				int nc = place[1] + dc[d];
+				
+				if(maze[nr][nc]==0) {
+					maze[nr][nc]=1;
+					q.add(new int[] {nr, nc});
+				} else if(maze[nr][nc]==3) {
+					flag = 1;
+					return;
+				}
 			}
 		}
-		
 	}
 
 }
