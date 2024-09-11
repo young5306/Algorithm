@@ -1,6 +1,8 @@
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -12,11 +14,6 @@ public class Main {
 	static int[] dc = { 0, 1, 0, -1 };
 
 	public static void main(String[] args) throws Exception {
-
-		// 농약 대신 배추흰지렁이로 해충 퇴치
-		// 인접(상하좌우)한 곳으로 이동 가능
-		// 출력 : 필요한 최소 지렁이 수
-		// => 치즈도둑 : 덩어리 개수 구하는 것과 유사한 것 같다. (day만 없음)
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int T = Integer.parseInt(br.readLine());
@@ -36,13 +33,13 @@ public class Main {
 				field[r][c] = 1;
 			}
 
-			// dfs
+			// bfs
 			visited = new boolean[N][M];
 			cnt = 0;
 			for (int r = 0; r < N; r++) {
 				for (int c = 0; c < M; c++) {
 					if (!visited[r][c] && field[r][c] == 1) {
-						dfs(r, c);
+						bfs(r, c);
 						cnt++;
 					}
 				}
@@ -53,15 +50,22 @@ public class Main {
 
 	}
 
-	static void dfs(int r, int c) {
+	static void bfs(int r, int c) {
+		Queue<int[]> q = new LinkedList<>();
 		visited[r][c] = true;
+		q.add(new int[] {r,c});
+		
+		while(!q.isEmpty()) {
+			int[] place = q.poll();
+			
+			for (int d = 0; d < 4; d++) {
+				int nr = place[0] + dr[d];
+				int nc = place[1] + dc[d];
 
-		for (int d = 0; d < 4; d++) {
-			int nr = r + dr[d];
-			int nc = c + dc[d];
-
-			if (nr >= 0 && nr < N && nc >= 0 && nc < M && !visited[nr][nc] && field[nr][nc] == 1) {
-				dfs(nr, nc);
+				if (nr >= 0 && nr < N && nc >= 0 && nc < M && !visited[nr][nc] && field[nr][nc] == 1) {
+					visited[nr][nc] = true;
+					q.add(new int[] {nr,nc});
+				}
 			}
 		}
 	}
