@@ -1,9 +1,10 @@
 
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -11,6 +12,7 @@ public class Main {
 	static int N, M, cnt;
 	static List<Integer>[] adj;
 	static boolean[] visited;
+	static Queue<Integer> q;
 
 	public static void main(String[] args) throws Exception { // DFS, BFS, 유니온 파인드 가능
 		
@@ -39,28 +41,32 @@ public class Main {
 		visited = new boolean[N+1];
 		cnt = 0;
 		
+		q = new LinkedList<>();
+		
 		for (int i = 1; i <= N; i++) {
 			if(!visited[i]) {
-				dfs(i);
+				bfs(i);
 				cnt++;
 			}
 		}
-		
 		System.out.println(cnt);
 
 	}
 	
-	static void dfs(int v) {
+	static void bfs(int v) {
 		visited[v] = true;
-		for (int i = 0; i < adj[v].size(); i++) {
-			int n = adj[v].get(i);
-			if(!visited[n]) {
-				dfs(n);
+		q.add(v);
+		
+		while(!q.isEmpty()) {
+			int n = q.poll();
+			for (int i : adj[n]) {
+				if(!visited[i]) {
+					visited[i] = true;
+					q.add(i);
+				}
 			}
 		}
+		
 	}
 
 }
-
-// 인접행렬의 장점 : 같은 간선은 한번만 주어진다. (중복 간선 들어와도 처리가 쉽다(할게 X))
-// [1][[2,2,3,4]] -> 리스트는 입력은 그대로 중복으로 들어옴. dfs 돌면서 visited로 중복처리하게 됨. (불필요한 확인하게 됨)
