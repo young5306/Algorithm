@@ -1,111 +1,82 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Solution {
-	
-	static int[] dr = {-1,1,0,0}; // 상하좌우
-	static int[] dc = {0,0,-1,1};
-	static int N, K, maxH, ans; // N : 2차원배열 크기, K 공사가능 깊이
+
+	static int N, K, max;
 	static int[][] mountain;
-	static boolean[][] visited; // 방문처리
-	
-	public static void main(String[] args) {
-		
-		Scanner sc = new Scanner(System.in);
-		int T = sc.nextInt();
+	static boolean[][] visited;
+
+	static int[] dr = { -1, 0, 1, 0 }; // 상우하좌
+	static int[] dc = { 0, 1, 0, -1 };
+
+	public static void main(String[] args) throws Exception {
+		// 입력받으면서 높은 봉우리 확인
+		// 높은 지형에서 낮은 지형으로 연결
+		// 한곳만 최대 K 깎을 수 있음
+		// 가장 긴 등산로 찾기
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+
 		for (int tc = 1; tc <= T; tc++) {
-			N = sc.nextInt(); // 3~8
-			K = sc.nextInt(); // 1~5
-			maxH = 0; // 1~20
-			ans = 0; // 등산로 길이
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			N = Integer.parseInt(st.nextToken());
+			K = Integer.parseInt(st.nextToken());
+
 			mountain = new int[N][N];
-			visited = new boolean[N][N];
-			
+			int maxHeight = 0;
 			for (int i = 0; i < N; i++) {
+				st = new StringTokenizer(br.readLine());
 				for (int j = 0; j < N; j++) {
-					mountain[i][j] = sc.nextInt();
-					// 높이만 찾는다 
-					if(maxH < mountain[i][j])
-						maxH = mountain[i][j];
+					int n = Integer.parseInt(st.nextToken());
+					mountain[i][j] = n;
+					maxHeight = Math.max(maxHeight, n);
 				}
-			} // 입력 받으면서 최대 높이만 찾을거야! (위치 저장X) 여러개 있을 수 있어서!
-			
-			// 전체를 순회하면서 가장 높은 봉우리에서 등산로 조성을 시작!
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < N; j++) {
-					if(mountain[i][j] == maxH) {
-						// 공사시작
-//						work(i, j, 1, true);
-						work(i, j, maxH, 1, true);
+			}
+
+			max = 1;
+			// 전체 돌면서 확인
+			for (int r = 0; r < N; r++) {
+				for (int c = 0; c < N; c++) {
+					visited = new boolean[N][N];
+					if (mountain[r][c] == maxHeight) {
+						dfs(r, c, 1, true); // true : 깎을 수 있다.
 					}
 				}
 			}
-			
-			System.out.println("#"+tc+" "+ans);
-		}
-	}
-	
-/////////// 높이를 들고 다니지 않을 때
-	// r,c : 현재 좌표
-	// dist : 지금까지의 공사 길이
-	// skill : 공사를 할 수 있는가
-	private static void work(int r, int c, int dist, boolean skill) {
-		if (dist > ans) ans = dist; // 갱신할 수 있으면 갱신
-		
-		visited[r][c] = true; // 방문
-		//////////////////////
-		// 4방향 탐색을 해야겠다. (상하좌우)
-		for (int i = 0; i < 4; i++) {
-			int nr = r + dr[i];
-			int nc = c + dc[i];
-			
-			// 경계를 벗어났으면 쳐내 / 이미 방문한 곳이라면 쳐내
-			if(nr<0 || nr>=N || nc<0 || nc>=N || visited[nr][nc]) continue;
-			// 1. 다음 좌표의 높이가 내 높이 보다 낮아
-			if(mountain[r][c] > mountain[nr][nc]) {
-				work(nr,nc, dist+1, skill);
-			}
-			// 2. 다음 좌표의 높이가 나와 같거나 높아
-			else if(skill && mountain[r][c] > mountain[nr][nc]-K) {
-				int tmp = mountain[nr][nc]; // 원상복구 해야해서 기록
-				mountain[nr][nc] = mountain[r][c] - 1;
-				work(nr, nc, dist+1, false);
-				mountain[nr][nc] = tmp; // 원산복구
+
+			System.out.println("#" + tc + " " + max);
+
+		} // tc
+	} // main
+
+	static void dfs(int r, int c, int level, boolean available) {
+		max = Math.max(max, level);
+		visited[r][c] = true;
+
+		for (int d = 0; d < 4; d++) {
+			int nr = r + dr[d];
+			int nc = c + dc[d];
+
+			if (nr >= 0 && nr < N && nc >= 0 && nc < N && !visited[nr][nc]) {
+				int sub = mountain[nr][nc] - mountain[r][c];
+				// 낮을 때 다음 dfs 돌기
+				if (sub < 0) {
+					dfs(nr, nc, level + 1, available);
+				}
+				// 높거나 같을 때 깎을 수 있는지 확인하고 깎기
+				else if (available && sub < K) {
+					int tmp = mountain[nr][nc];
+					mountain[nr][nc] = mountain[r][c] - 1;
+					dfs(nr, nc, level + 1, !available);
+					mountain[nr][nc] = tmp;
+				}
 			}
 		}
 		
-		////////////////
-		visited[r][c] = false; //원상복구
+		visited[r][c] = false;
 	}
-	
-/////////// 높이를 들고 다닐 때
-	// r,c : 현재 좌표
-	// h : 현재 높이
-	// dist : 지금까지의 공사 길이
-	// skill : 공사를 할 수 있는가
-	private static void work(int r, int c, int h, int dist, boolean skill) {
-		if (dist > ans) ans = dist; // 갱신할 수 있으면 갱신
-		
-		visited[r][c] = true; // 방문
-		//////////////////////
-		// 4방향 탐색을 해야겠다. (상하좌우)
-		for (int i = 0; i < 4; i++) {
-			int nr = r + dr[i];
-			int nc = c + dc[i];
-			
-			// 경계를 벗어났으면 쳐내 / 이미 방문한 곳이라면 쳐내
-			if(nr<0 || nr>=N || nc<0 || nc>=N || visited[nr][nc]) continue;
-			// 1. 다음 좌표의 높이가 내 높이 보다 낮아
-			if(h > mountain[nr][nc]) {
-				work(nr, nc, mountain[nr][nc], dist+1, skill);
-			}
-			// 2. 다음 좌표의 높이가 나와 같거나 높아
-			else if(skill && h > mountain[nr][nc]-K) {
-				work(nr, nc, h - 1, dist+1, false);
-			}
-		}
-		
-		////////////////
-		visited[r][c] = false; //원상복구
-	}
-	
+
 }
