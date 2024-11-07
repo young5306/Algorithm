@@ -12,6 +12,7 @@ public class Main {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int T = Integer.parseInt(br.readLine());
 		StringTokenizer st;
+		StringBuilder sb = new StringBuilder();
 
 		for (int tc = 0; tc < T; tc++) {
 			
@@ -26,40 +27,31 @@ public class Main {
 
 				switch (str) {
 				case "I":
-					if(tmap.containsKey(num)) {
-						tmap.put(num, tmap.get(num)+1);
-					} else {
-						tmap.put(num, 1);
-					}
+					tmap.compute(num, (key, value) -> value==null?1:value+1);
 					break;
 				case "D":
 					if (tmap.size()!=0) {
-						if (num > 0) { // 최대값 삭제
-							int key = tmap.lastKey();
-							int value = tmap.lastEntry().getValue();
-							remove(key, value);
-							remove(key, value);
-						} else { // 최소값 삭제
-							int key = tmap.firstKey();
-							int value = tmap.firstEntry().getValue();
-							remove(key, value);
-						}
+						// num==1 최대값 삭제
+						tmap.compute(num==1?tmap.lastKey():tmap.firstKey(),
+								(key, value) -> value>1?value-1:null);
 					}
 					break;
+					
 				}
 
 			}
 			
-			System.out.println(tmap.size()>0 ? tmap.lastKey() + " " + tmap.firstKey() : "EMPTY" );
+			if(!tmap.isEmpty()) {
+				sb.append(tmap.lastKey()).append(' ').append(tmap.firstKey());
+			} else {
+				sb.append("EMPTY");
+			}
+			sb.append('\n');
+			
 		}
+		System.out.println(sb);
 	}
-	static void remove(int key, int value) {
-		if(value>1) {
-			tmap.put(key, value-1);
-		} else {
-			tmap.remove(key);
-		}
-	}
+
 
 }
 /* 트리맵
@@ -70,4 +62,10 @@ map.remove(키)
 map.clear()
 map.firstEntry(), lastEntry() 
 map.firstKey(), lastKey()
+
+map.compute("key1", (key, value) -> (value == null) ? 1 : value + 1);
+key가 존재하지 않으면 새로 추가, 있으면 value+1로 갱신
+
+null이면 삭제를 의미함.
+
 */
