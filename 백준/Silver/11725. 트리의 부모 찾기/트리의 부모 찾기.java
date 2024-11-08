@@ -12,6 +12,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
+		StringBuilder sb = new StringBuilder();
 		int N = Integer.parseInt(br.readLine());
 		int[] p = new int[N + 1];
 
@@ -43,8 +44,10 @@ public class Main {
 		}
 		
 		for (int i = 2; i <= N; i++) {
-			System.out.println(p[i]);
+			sb.append(p[i]).append("\n");
 		}
+		
+		System.out.println(sb);
 
 	}
 
