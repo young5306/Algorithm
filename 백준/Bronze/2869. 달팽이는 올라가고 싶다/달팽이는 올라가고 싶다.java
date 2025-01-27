@@ -12,7 +12,8 @@ public class Main {
         int B = Integer.parseInt(st.nextToken());
         int V = Integer.parseInt(st.nextToken());
 
-        int days = (int)Math.ceil((double)(V-A) / (A-B));
-        System.out.println(days+1);
+//        int days = (int)Math.ceil((double)(V-A) / (A-B));
+        int days = (int)Math.ceil((double)(V-B) / (A-B));
+        System.out.println(days);
     }
 }
