@@ -7,59 +7,70 @@ import java.util.StringTokenizer;
 
 public class Main {
 	
-	static int[] dr = {-1, 0, 1, 0};
+	static class Tomato {
+		int x;
+		int y;
+		int day;
+		
+		Tomato() {}
+		Tomato(int x, int y, int day) {
+			this.x = x;
+			this.y = y;
+			this.day = day;
+		}
+	}
+	
+	static int[] dr = {-1, 0, 1, 0}; // 상우하좌
 	static int[] dc = {0, 1, 0, -1};
 
-
 	public static void main(String[] args) throws Exception {
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		int M = Integer.parseInt(st.nextToken());
 		int N = Integer.parseInt(st.nextToken());
+		
 		int[][] box = new int[N][M];
-		Queue<int[]> q = new LinkedList<>();
-		for (int i = 0; i < N; i++) {
+		Queue<Tomato> q = new LinkedList<>();
+		int day = 0;
+		
+		for(int i=0; i<N; i++) {
 			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < M; j++) {
-				box[i][j] = Integer.parseInt(st.nextToken());
-				if(box[i][j]==1) q.add(new int[]{i,j});
+			for(int j=0; j<M; j++) {
+				int status = Integer.parseInt(st.nextToken());
+				box[i][j] = status;
+				if(status == 1) q.add(new Tomato(i, j , 0));
 			}
 		}
 		
-		int day = -1;
-		
+		// bfs
 		while(!q.isEmpty()) {
-			day++;
-			int qSize = q.size();
-			for (int s = 0; s < qSize; s++) {
-				int[] place = q.poll();
-				int r = place[0];
-				int c = place[1];
-				for (int d = 0; d < 4; d++) {
-					int nr = r + dr[d];
-					int nc = c + dc[d];
-					if(nr>=0 && nr<N && nc>=0 && nc<M && box[nr][nc]==0) {
-						box[nr][nc] = 1;
-						q.add(new int[] {nr, nc});
-					}
+			Tomato t = q.poll();
+			day = Math.max(day, t.day);
+			
+			for(int d=0; d<4; d++) {
+				int nx = t.x + dr[d];
+				int ny = t.y + dc[d];
+				
+				if(nx>=0 && nx<N && ny>=0 && ny<M && box[nx][ny] == 0) {
+					box[nx][ny] = 1; // visited 배열 필요없어짐
+					q.add(new Tomato(nx, ny, t.day+1));
 				}
 			}
 		}
 		
+		// 안익은 토마토 있는지 확인
 		boolean flag = true;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < M; j++) {
-				if(box[i][j] == 0) {
-					flag = false; 
-					break;
+		out: for(int row[] : box) {
+			for(int col : row) {
+				if(col == 0) {
+					flag = false;
+					break out;
 				}
 			}
 		}
 		
-		System.out.println(flag ? day : -1);
-		
-		
-		
+		System.out.print(flag ? day : -1);
 	}
-
 }
+
