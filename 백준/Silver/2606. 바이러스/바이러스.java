@@ -1,54 +1,54 @@
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class Main { // DFS, BFS, 유니온 파인드 
+public class Main {
 	
-	static int N, E, cnt;
-	static List<Integer>[] adj;
+	static ArrayList<Integer>[] adj;
 	static boolean[] visited;
+	static int cnt;
 	
 	public static void main(String[] args) throws Exception {
-		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
-		N = Integer.parseInt(br.readLine());
-		E = Integer.parseInt(br.readLine());
-		adj = new ArrayList[N+1]; 
 		
-		for (int i = 1; i <= N; i++) {
+		int N = Integer.parseInt(br.readLine());
+		int E = Integer.parseInt(br.readLine());
+		
+		adj = new ArrayList[N+1];
+		for(int i=1; i<=N; i++) {
 			adj[i] = new ArrayList<>();
 		}
-		for (int i = 0; i < E; i++) {
-			st = new StringTokenizer(br.readLine());
-			int A = Integer.parseInt(st.nextToken());
-			int B = Integer.parseInt(st.nextToken());
 			
-			adj[A].add(B);
-			adj[B].add(A);
+		for(int i=0; i<E; i++) {
+			st = new StringTokenizer(br.readLine());
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			
+			adj[a].add(b);
+			adj[b].add(a);
 		}
 		
-		// dfs로 방문한 곳은 모두 cnt하기
 		visited = new boolean[N+1];
-		cnt = -1; // 1번 컴퓨터 제외
+		cnt = 0;
+		visited[1] = true;
 		dfs(1);
 		
 		System.out.println(cnt);
-
 	}
 	
-	static void dfs(int v) {
-		visited[v] = true;
-		cnt++;
+	static void dfs(int start) {
+		// 기저 조건
 		
-		for(int i : adj[v]) {
-			if(!visited[i]) {
-				dfs(i);
+		// 재귀 부분
+		for(int num : adj[start]) {
+			if(!visited[num]) {
+				visited[num] = true;
+				cnt++;
+				dfs(num);
 			}
 		}
+		
 	}
-
 }
