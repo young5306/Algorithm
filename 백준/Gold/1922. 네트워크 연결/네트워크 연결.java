@@ -1,64 +1,74 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 
 public class Main {
-
-	static class Edge implements Comparable<Edge> {
-		int B;
-		int C;
-		public Edge(int b, int c) {
-			super();
-			B = b;
-			C = c;
-		}
-		@Override
-		public int compareTo(Edge o) {
-			return this.C - o.C;
+	static class Edge {
+		int u;
+		int v;
+		int w;
+		Edge(){}
+		Edge(int u, int v, int w){
+			this.u = u;
+			this.v = v;
+			this.w = w;
 		}
 	}
-	public static void main(String[] args) throws Exception {
+	
+	static int[] p;
+	
+	public static void main (String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
 		int N = Integer.parseInt(br.readLine());
 		int M = Integer.parseInt(br.readLine());
-		List<Edge>[] adj = new ArrayList[N+1]; // 1~N
-		for (int i = 1; i <= N; i++) {
-			adj[i] = new ArrayList<>();
-		}
+		StringTokenizer st;
 		
-		for (int i = 0; i < M; i++) {
+		Edge[] edge = new Edge[M];
+		
+		for(int i=0; i<M; i++) {
 			st = new StringTokenizer(br.readLine());
-			int A = Integer.parseInt(st.nextToken());
-			int B = Integer.parseInt(st.nextToken());
-			int C = Integer.parseInt(st.nextToken());
-			
-			adj[A].add(new Edge(B, C));
-			adj[B].add(new Edge(A, C));
-		}
-		boolean visited[] = new boolean[N+1];
-		visited[1] = true;
-		PriorityQueue<Edge> pq = new PriorityQueue<>();
-		for(Edge e : adj[1]) {
-			pq.add(e);
-		}
-		int pick = 1;
-		int ans = 0;
-		while(pick != N) {
-			Edge e = pq.poll();
-			if(visited[e.B]) continue;
-			
-			pick++;
-			ans += e.C;
-			visited[e.B] = true;
-			
-			pq.addAll(adj[e.B]);
+			edge[i] = new Edge(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
 		}
 		
-		System.out.println(ans);
+		Arrays.sort(edge, new Comparator<Edge>(){
+			@Override
+			public int compare(Edge e1, Edge e2) {
+				return e1.w - e2.w; // 오름차순 (작은순)
+			}
+		});
+		
+		// 준비
+		p = new int[N+1]; 
+		for(int i=1; i<=N; i++) {
+			p[i] = i;
+		}
+		
+		int con = 0;
+		int pick = 0;
+		
+		for(Edge e : edge) {
+			int pu = findSet(e.u);
+			int pv = findSet(e.v);
+			
+			if(pu != pv) { // 같은 트리로 이미 연결되어 있지 않으면 (사이클 방지)
+				union(pu, pv);
+				pick++;
+				con += e.w;
+				if(pick == N) break;
+			}
+		}
+		
+		System.out.println(con);
 	}
-
+	
+	static void union(int x, int y) {
+		p[y] = x;
+	}
+	
+	static int findSet(int x) {
+		if(p[x] == x) return x;
+		return findSet(p[x]); //
+	}
 }
