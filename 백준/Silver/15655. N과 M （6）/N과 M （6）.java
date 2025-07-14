@@ -1,50 +1,54 @@
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
-	
-	static StringBuilder sb = new StringBuilder();
 
+	static int N, M;
+	static int[] num;
+	static int[] sel;
+	static boolean[] visited;
+	static StringBuilder sb;
+	
 	public static void main(String[] args) throws Exception {
-		// N개 중 M개 (중복X, 순서X) -> 중복X조합 (nums, visitedX, sel, idx, sidx) 
-		// 오름차순 (nums 정렬 후 조합 진행)
-		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		sb = new StringBuilder();
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		int N = Integer.parseInt(st.nextToken());
-		int M = Integer.parseInt(st.nextToken());
-		
-		int[] nums = new int[N];
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < N; i++) {
-			nums[i] = Integer.parseInt(st.nextToken());
+		num = new int[N];
+		for(int i=0; i<N; i++) {
+			num[i] = Integer.parseInt(st.nextToken());
 		}
+		Arrays.sort(num);
 		
-		Arrays.sort(nums); 
-		int[] sel = new int[M];
-		
-		combination(N, M, nums, sel, 0, 0);
-		
+		sel = new int[M];
+		visited = new boolean[N];
+		dfs(0, 0);
+
 		System.out.println(sb);
 	}
 	
-	public static void combination(int N, int M, int[] nums, int[] sel, int idx, int sidx) {
+	static void dfs(int idx, int sidx) {
 		// 기저 조건
-		if(sidx==M) {
-			for (int i = 0; i < M; i++) {
-				sb.append(sel[i]).append(" ");
+		if(sidx >= M) {
+			for(int s: sel) {
+				sb.append(s).append(" ");
 			}
 			sb.append("\n");
 			return;
 		}
+		
 		// 재귀 부분
-		for (int i = idx; i < N; i++) {
-			// 선택 O
-			sel[sidx] = nums[i];
-			combination(N, M, nums, sel, i+1, sidx+1);
+		for(int i=idx; i<N; i++) {
+			if(visited[i]) continue;
+			visited[i] = true;
+			sel[sidx] = num[i];
+			dfs(i+1, sidx+1);
+			visited[i] = false;
 		}
 	}
-
-}
+}  
