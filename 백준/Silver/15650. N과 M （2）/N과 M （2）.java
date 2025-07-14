@@ -2,36 +2,43 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class NM2 {
+public class Main {
+	
+	static int[] num;
+	static int N, M;
 
 	public static void main(String[] args) throws Exception {
-		// 1~N 중 중복없이 M개 고르기 (순서X) -> 중복X 조합 (조합은 visited 필요X)
 		
+		// 조합 (순서x)
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		int N = Integer.parseInt(st.nextToken());
-		int M = Integer.parseInt(st.nextToken());
 		
-		int[] sel = new int[M];
-		combination(N, M, sel, 1, 0);
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		
+		num = new int[M];
+		dfs(1, 0);
+		
 	}
 	
-	public static void combination(int N, int M, int[] sel, int idx, int sidx) {
+	static void dfs(int idx, int sidx) {
 		// 기저 조건
-		if(sidx == M) {
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < M; i++) {
-				sb.append(sel[i]).append(" ");
+		if(sidx >= M) {
+			for(int n: num) {
+				System.out.print(n+" ");
 			}
-			System.out.println(sb);
+			System.out.println();
 			return;
 		}
 		
 		// 재귀 부분
-		for (int i = idx; i <= N; i++) {
-			// 선택 O
-			sel[sidx] = i;
-			combination(N, M, sel, i+1, sidx+1); // idx+1로 했다가 틀림
+		for(int i=idx; i<=N; i++) {
+			// 선택o
+			num[sidx] = i;
+			dfs(i+1, sidx+1);
+			// 선택x
 		}
+		
 	}
+
 }
