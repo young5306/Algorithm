@@ -1,30 +1,34 @@
 import java.util.*;
 
 class Solution {
-    static int[][] reqs;
-    static int n, k, min = Integer.MAX_VALUE;
+
+    static int K, N;
     static int[] kArr;
+    static int[][] req;
+    static int min;
 
     public int solution(int k, int n, int[][] reqs) {
-        this.k = k;
-        this.n = n;
-        this.reqs = reqs;
-        kArr = new int[k];
+        K = k;
+        N = n;
+        req = reqs;
+        min = Integer.MAX_VALUE;
 
-        // 각 상담 유형에 최소 1명씩 먼저 배정
+        // 모든 경우의 수를 확인하다고 가정 - 최대 20^5
+        // k배열 - 상담 끝나는 시간들 리스트로 저장
+
+        // 1. 모든 경우의 수 돌기 (dfs)
+        kArr = new int[K];
         Arrays.fill(kArr, 1);
-
-        // 나머지 n - k명을 분배
-        dfs(0, n - k);
+        dfs(0, n - k); // n-k명을 k개 상담에 분배 (중복 조합), 중복 순열로 풀면 시간 초과 뜸
 
         return min;
     }
 
-    // 상담 유형별 멘토 분배 조합 구하기
     static void dfs(int idx, int remain) {
-        if (idx == k || remain == 0) {
+        // 기저 조건
+        if (idx == K || remain == 0) {
             // 남은 인원 다 배분했으면 대기 시간 계산
-            min = Math.min(min, simulate());
+            min = Math.min(min, getWaitingTime());
             return;
         }
 
@@ -32,34 +36,37 @@ class Solution {
             kArr[idx] += i;
             dfs(idx + 1, remain - i);
             kArr[idx] -= i;
+            // kArr[i]++; // 중복 순열 코드
+            // dfs(scnt + 1);
+            // kArr[i]--;
         }
     }
 
-    // 현재 kArr 멘토 배치 상태에서 총 대기 시간 계산
-    static int simulate() {
-        // 상담 유형별로 멘토의 다음 가능 시간 PriorityQueue로 관리
-        PriorityQueue<Integer>[] mentorQueues = new PriorityQueue[k];
-        for (int i = 0; i < k; i++) {
-            mentorQueues[i] = new PriorityQueue<>();
-            for (int j = 0; j < kArr[i]; j++) {
-                mentorQueues[i].add(0); // 모든 멘토는 처음에 0분부터 상담 가능
+    static int getWaitingTime() {
+        PriorityQueue<Integer>[] kTime = new PriorityQueue[K];
+        for(int i = 0; i < K; i++) {
+            kTime[i] = new PriorityQueue<>();
+            for(int j = 0; j < kArr[i]; j++) {
+                kTime[i].add(0);
             }
         }
 
-        int totalWait = 0;
+        int wt = 0;
 
-        for (int[] req : reqs) {
-            int start = req[0], time = req[1], type = req[2] - 1;
-            PriorityQueue<Integer> pq = mentorQueues[type];
-            int availableTime = pq.poll();
-            if (availableTime > start) {
-                totalWait += availableTime - start;
-                pq.add(availableTime + time);
+        for(int i = 0; i < req.length; i++) {
+            int start = req[i][0];
+            int counselTime = req[i][1];
+            int type = req[i][2] - 1;
+
+            int recentTime = kTime[type].poll();
+            if(recentTime > start) {
+                wt += (recentTime - start);
+                kTime[type].add(recentTime + counselTime);
             } else {
-                pq.add(start + time);
+                kTime[type].add(start + counselTime);
             }
         }
 
-        return totalWait;
+        return wt;
     }
 }
