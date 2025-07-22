@@ -26,11 +26,13 @@ class Solution {
 
     static void dfs(int idx, int remain) {
         // 기저 조건
-        if (idx == K || remain == 0) {
+        
+        if (idx == K && remain == 0) {
             // 남은 인원 다 배분했으면 대기 시간 계산
             min = Math.min(min, getWaitingTime());
             return;
         }
+        if(idx == K) return;
 
         for (int i = 0; i <= remain; i++) {
             kArr[idx] += i;
