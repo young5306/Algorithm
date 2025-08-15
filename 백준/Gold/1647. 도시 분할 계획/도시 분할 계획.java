@@ -59,7 +59,8 @@ public class Main {
 			p[i] = i;
 		}
 		for(int i = 0; i < M; i++) {
-			if(pick == N-2) break; // 마지막 점 빼고 종료
+			if(pick == N-2) break; // 마지막 점 빼고 종료 
+			// 위치 여기에다 써야 하는 이유: 마을이 2개이면 아예 연결할 필요 X
 
 			Path path = arr[i];
 			int px = findSet(path.x);
