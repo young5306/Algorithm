@@ -15,10 +15,8 @@ public class Main {
 		int[] cnt = new int[N];
 		int idx = 0;
 		cnt[0] = 1;
-		out: while(true) {
-			for(int i = 0; i < N; i++) {
-				if(cnt[i] >= M) break out;
-			}
+		while(true) {
+			if(cnt[idx] >= M) break;
 			
 			if(cnt[idx] % 2 == 0) {
 				idx = (idx - L + N) % N;
