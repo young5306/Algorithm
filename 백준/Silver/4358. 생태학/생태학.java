@@ -9,18 +9,21 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		Map<String, Integer> map = new TreeMap<>();
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int cnt = 0;
+		int tot = 0;
 		String str;
 		while((str = br.readLine()) != null) { // EOF (End Of File) 처리 방법
 			if(str.equals("")) break;
 			map.put(str, map.getOrDefault(str, 0) + 1);
-			cnt++;
+			tot++;
 		}
 		
+		StringBuilder sb = new StringBuilder();
 		for(Map.Entry<String, Integer> ent : map.entrySet()) {
-			System.out.printf("%s %.4f\n", ent.getKey(), ((float) ent.getValue()) * 100 / ((float) cnt));
+			float val = (float) (ent.getValue() * 100.0 / tot);
+			sb.append(ent.getKey()).append(" ").append(String.format("%.4f", val)).append("\n");
 		}
 		
+		System.out.println(sb);
 	}
 
 }
