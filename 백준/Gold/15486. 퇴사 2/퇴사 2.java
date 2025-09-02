@@ -21,18 +21,17 @@ public class Main {
 		
 		// dp[0]을 구함
 		int[] dp = new int[N + 1]; // 퇴사일(N+1)은 0
-		int max = 0;
+
 		// N일 이후에 벌 수 있는 최대 수익
 		for(int i = N - 1; i >= 0; i--) {
 			if (i + time[i] > N) {
-				dp[i] = Math.max(max, dp[i]);
+				dp[i] = Math.max(dp[i + 1], dp[i]);
 				continue;
 			}
 			
-			dp[i] = Math.max(max, dp[i + time[i]] + pay[i]);
-			max = Math.max(max, dp[i]);
+			dp[i] = Math.max(dp[i + 1], dp[i + time[i]] + pay[i]);
 		}
 		
-		System.out.println(max);
+		System.out.println(dp[0]);
 	}
 }
