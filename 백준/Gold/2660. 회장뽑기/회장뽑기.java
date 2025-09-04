@@ -11,66 +11,67 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 public class Main {
-
+	
+	// 플로이드 워셜로 풀어보기
+	// 모든점에서 모든 점으로의 최단거리 (음수 가중치 포함, 시간 복잡도 ^3)
 	public static void main(String[] args) throws Exception {
 		
-		// 점수 가장 작은 사람이 회장
-		// 모두가 서로와 간접적으로 연결되어 있음
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int N = Integer.parseInt(br.readLine());
 		
 		int[] score = new int[N + 1];
-		List<Integer>[] rel = new ArrayList[N + 1];
-		for(int i = 1; i <= N; i++) {
-			rel[i] = new ArrayList<>();
-		}
+		int[][] dist = new int[N + 1][N + 1];
 		
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		int a = Integer.parseInt(st.nextToken());
 		int b = Integer.parseInt(st.nextToken());
 		while(a != -1 || b != -1) {
-			rel[a].add(b);
-			rel[b].add(a);
+			dist[a][b] = 1;
+			dist[b][a] = 1;
 			
 			st = new StringTokenizer(br.readLine());
 			a = Integer.parseInt(st.nextToken());
 			b = Integer.parseInt(st.nextToken());
 		}
 		
+		for(int i = 1; i <= N; i++) {
+			for(int j = 1; j <= N; j++) {
+				if (i == j) dist[i][j] = 0;
+				else if (dist[i][j] != 1) {
+					dist[i][j] = 50;
+				}
+				
+			}
+		}
+//		for(int[] d : dist) {
+//			System.out.println(Arrays.toString(d));
+//		}
+		
+		// 플로이드 워셜 (경유점 하나씩 추가)
+		for(int k = 1; k <= N; k++) {
+			for(int i = 1; i <= N; i++) {
+				for(int j = 1; j <= N; j++) {
+					dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+				}
+			}			
+		}
+//		for(int[] d : dist) {
+//			System.out.println(Arrays.toString(d));
+//		}
 		int min = Integer.MAX_VALUE;
 		for(int i = 1; i <= N; i++) {
-//			System.out.println(i);
-		
-			Queue<int[]> q = new LinkedList<>();
-			boolean[] visited = new boolean[N + 1];
-			q.add(new int[] {i, 0});
-			visited[i] = true;
-			int depth = 0;
-			
-			while(!q.isEmpty()) {
-				int[] cur = q.poll();
-				depth = Math.max(depth, cur[1]);
-//				System.out.println(cur);
-				for(int r : rel[cur[0]]) {
-					if(!visited[r]) {
-						q.add(new int[] {r, cur[1] + 1});
-						visited[r] = true;
-					}
-				}
+			for(int j = 1; j <= N; j++) {
+				score[i] = Math.max(dist[i][j], score[i]);
 			}
-			score[i] = depth;
-			
-			min = Math.min(min, score[i]);
-//			System.out.println(min);
+			min = Math.min(score[i], min);
 		}
 		
-		Set<Integer> candidate = new TreeSet<>();
+		Set<Integer> set = new TreeSet<>();
 		for(int i = 1; i <= N; i++) {
-			if(score[i] == min) candidate.add(i);
+			if(score[i] == min) set.add(i);
 		}
-		
-		System.out.println(min + " " + candidate.size());
-		for(int s : candidate) {
+		System.out.println(min + " " + set.size());
+		for(int s : set) {
 			System.out.print(s + " ");
 		}
 		
