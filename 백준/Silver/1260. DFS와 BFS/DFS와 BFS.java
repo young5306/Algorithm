@@ -1,77 +1,79 @@
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
-
-	static List<Integer>[] adj;
-	static int N, M, V;
-	static boolean[] visited;
-	static Queue<Integer> q;
 	
+	static int N, M;
+	static List<Integer>[] adj;
+	static boolean[] visited;
+	static StringBuilder sb;
+
 	public static void main(String[] args) throws Exception {
-		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
-		V = Integer.parseInt(st.nextToken());
-		adj = new ArrayList[N+1]; // 1~N
+		int V = Integer.parseInt(st.nextToken());
 		
-		for (int i =1; i <= N; i++) { 
-			adj[i] = new ArrayList<>(); 
+		adj = new LinkedList[N + 1];
+		for(int i = 1; i <= N; i++) {
+			adj[i] = new LinkedList<>();
 		}
 		for (int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine());
-			int A = Integer.parseInt(st.nextToken());
-			int B = Integer.parseInt(st.nextToken());
-			adj[A].add(B); // 양방향
-			adj[B].add(A);
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			adj[a].add(b);
+			adj[b].add(a);
 		}
-		for(int i=1; i<=N; i++){ // 리스트를 오름차순으로 해야 작은 수부터 나옴
-			Collections.sort(adj[i]);
-		} // sort 마음에 안들엉
 		
-		// DFS 수행 결과
-		visited = new boolean[N+1];
+		sb = new StringBuilder();
+		// dfs
+		visited = new boolean[N + 1];
+		visited[V] = true;
 		dfs(V);
-		System.out.println();
+		sb.append("\n");
 		
-		// BFS 수행 결과
-		visited = new boolean[N+1];
-		q = new LinkedList<>();
+		// bfs
 		bfs(V);
-	
+		
+		System.out.println(sb);
 	}
 	
-	static void dfs(int V) { // 인접행렬 코드와 비교
-		visited[V] = true;
-		System.out.print(V+" ");
+	static void dfs(int V) {
 		
-		for (int i : adj[V]) {
-			if(!visited[i]) {
-				dfs(i);
-			}
+		// 재귀 부분
+		sb.append(V).append(" ");
+		Collections.sort(adj[V]);
+		for(int a : adj[V]) {
+			if(visited[a]) continue;
+			visited[a] = true;
+			dfs(a);
 		}
 	}
 	
 	static void bfs(int V) {
-		visited[V] = true;
+		Queue<Integer> q = new LinkedList<>();
+		visited = new boolean[N + 1];
 		q.add(V);
+		visited[V] = true;
 		
 		while(!q.isEmpty()) {
-			int v = q.poll();
-			System.out.print(v+" ");
-			for (int i : adj[v]) {
-				if(!visited[i]) {
-					visited[i] = true;
-					q.add(i);
-				}
+			int cur = q.poll();
+			sb.append(cur).append(" ");
+			
+			Collections.sort(adj[cur]);
+			for(int a : adj[cur]) {
+				if(visited[a]) continue;
+				visited[a] = true;
+				q.add(a);
 			}
 		}
 	}
