@@ -17,8 +17,8 @@ public class Main {
 //        }
 		// 제곱 수 기준 
 		// n^2 -> 최소 이동 횟수 = 2n - 1
-		// n^2 - n + 1 ~ 까지 -> 2n - 1
 		// ~ n^2 + n 까지 -> 2^n
+		// ~ (n + 1) * (n + 1) 까지 -> 2^n + 1
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
