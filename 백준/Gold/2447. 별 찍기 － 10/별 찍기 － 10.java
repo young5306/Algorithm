@@ -22,10 +22,7 @@ public class Main {
 		StringBuilder sb = new StringBuilder();
 		
 		for(int i = 0; i < N; i++) {
-			for(int j = 0; j < N; j++) {
-				sb.append(board[i][j]);
-			}
-			sb.append("\n");
+			sb.append(board[i]).append("\n");
 		}
 		
 		System.out.println(sb);
