@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -25,9 +24,7 @@ public class Main {
 		
 		for(int n = 0; n < N; n++) {
 			for(int k = arr[n]; k <= K; k++) {
-				if(dp[k - arr[n]] != 0) {
-					dp[k] += dp[k - arr[n]];					
-				}
+				dp[k] += dp[k - arr[n]];					
 			}
 //			System.out.println(Arrays.toString(dp));
 		}
