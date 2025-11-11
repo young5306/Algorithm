@@ -1,28 +1,32 @@
+-- hours 테이블 만드는 방법
+
+-- 1. 재귀
 WITH RECURSIVE hours AS (
     -- 초기값
-    SELECT 0 AS h
+    SELECT 0 AS hr
     -- 
     UNION ALL
     -- 재귀 부분
-    SELECT h + 1 
+    SELECT hr + 1 
     FROM hours
     -- 기저 조건
-    WHERE h < 23   
+    WHERE hr < 23   
 )
 
-SELECT h.h AS HOUR, COUNT(o.ANIMAL_ID) AS COUNT
+SELECT h.hr AS HOUR, COUNT(o.ANIMAL_ID) AS COUNT
 FROM hours h
 LEFT JOIN ANIMAL_OUTS o
-ON h.h = HOUR(o.DATETIME)
-GROUP BY h.h
-ORDER BY h.h
-
+ON h.hr = HOUR(o.DATETIME)
+GROUP BY h.hr
+ORDER BY h.hr
 
 
 
 -- 2. 노가다
+# SELECT h.hr AS HOUR,
+#        COUNT(o.ANIMAL_ID) AS COUNT
 # FROM (
-#   SELECT 0 h
+#   SELECT 0 hr
 #     UNION ALL SELECT 1 
 #     UNION ALL SELECT 2 
 #     UNION ALL SELECT 3 
@@ -47,5 +51,7 @@ ORDER BY h.h
 #     UNION ALL SELECT 22 
 #     UNION ALL SELECT 23
 # ) h
-
--- 3. dual
+# LEFT JOIN ANIMAL_OUTS o
+#   ON HOUR(o.DATETIME) = h.hr
+# GROUP BY h.hr
+# ORDER BY h.hr;
