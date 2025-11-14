@@ -1,74 +1,73 @@
 import java.util.*;
 
 class Solution {
-
-    static int K, N;
-    static int[] kArr;
-    static int[][] req;
-    static int min;
+    static int K, N, min;
+    static int[] kMentoCnt;
+    static int[][] reqsArr;
 
     public int solution(int k, int n, int[][] reqs) {
+        // 모든 경우의 수 구하기: 시간복잡도 20^5
+        // dfs
+        
         K = k;
         N = n;
-        req = reqs;
+        kMentoCnt = new int[K + 1]; // 1번 ~ k번 유형을 담당하는 멘토 수
+        Arrays.fill(kMentoCnt, 1); // 각 상담 유형은 최소 1명 배치
+        reqsArr = reqs;
+        
         min = Integer.MAX_VALUE;
-
-        // 모든 경우의 수를 확인하다고 가정 - 최대 20^5
-        // k배열 - 상담 끝나는 시간들 리스트로 저장
-
-        // 1. 모든 경우의 수 돌기 (dfs)
-        kArr = new int[K];
-        Arrays.fill(kArr, 1);
-        dfs(0, n - k); // n-k명을 k개 상담에 분배 (중복 조합), 중복 순열로 풀면 시간 초과 뜸
-
+        dfs(1, N - K); // 유형idx, 배치해야 할 남은 멘토 수
+        
         return min;
     }
-
-    static void dfs(int idx, int remain) {
+    
+    static void dfs(int kidx, int remain) {
         // 기저 조건
-        
-        if (idx == K && remain == 0) {
-            // 남은 인원 다 배분했으면 대기 시간 계산
-            min = Math.min(min, getWaitingTime());
+        if(kidx > K && remain == 0) {
+            // 대기 시간 확인
+            int wtime = calcWaitingTime();
+            min = Math.min(min, wtime);
             return;
         }
-        if(idx == K) return;
-
-        for (int i = 0; i <= remain; i++) {
-            kArr[idx] += i;
-            dfs(idx + 1, remain - i);
-            kArr[idx] -= i;
-            // kArr[i]++; // 중복 순열 코드
-            // dfs(scnt + 1);
-            // kArr[i]--;
+        if(kidx > K) {
+            return;
+        }
+        
+        // 재귀 부분
+        for(int i = 0; i <= remain; i++) {
+            kMentoCnt[kidx] += i;
+            dfs(kidx + 1, remain - i);
+            kMentoCnt[kidx] -= i;
         }
     }
-
-    static int getWaitingTime() {
-        PriorityQueue<Integer>[] kTime = new PriorityQueue[K];
-        for(int i = 0; i < K; i++) {
-            kTime[i] = new PriorityQueue<>();
-            for(int j = 0; j < kArr[i]; j++) {
-                kTime[i].add(0);
+    
+    static int calcWaitingTime() {
+        // 유형마다 pq 만들어서 끝나는 시점 저장
+        PriorityQueue<Integer>[] pq = new PriorityQueue[K + 1];
+        
+        for(int i = 1; i <= K; i++) {
+            pq[i] = new PriorityQueue<>();
+            for(int j = 0; j < kMentoCnt[i]; j++){
+                pq[i].add(0);
             }
         }
-
-        int wt = 0;
-
-        for(int i = 0; i < req.length; i++) {
-            int start = req[i][0];
-            int counselTime = req[i][1];
-            int type = req[i][2] - 1;
-
-            int recentTime = kTime[type].poll();
-            if(recentTime > start) {
-                wt += (recentTime - start);
-                kTime[type].add(recentTime + counselTime);
-            } else {
-                kTime[type].add(start + counselTime);
+        
+        int wtime = 0;
+        
+        for(int i = 0; i < reqsArr.length; i++) {
+            int start = reqsArr[i][0]; // 이미 오름차순으로 나옴
+            int duration = reqsArr[i][1];
+            int k = reqsArr[i][2];
+            
+            int time = pq[k].poll();
+            
+            if(time <= start) { // 바로 시작
+                pq[k].add(start + duration);
+            } else { // 대기 후 시작
+                wtime += (time - start);
+                pq[k].add(time + duration);
             }
         }
-
-        return wt;
+        return wtime;
     }
 }
